@@ -3,8 +3,9 @@ package pl.rmitula.restfullshop.model.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
-public class UserDto {
+public class UserDto implements Serializable {
 
     private Long id;
     @NotNull
@@ -15,20 +16,10 @@ public class UserDto {
     private String userName;
     @NotNull
     private String email;
-    @NotNull
-    @JsonIgnore
+
     private String password;
 
     public UserDto() {
-    }
-
-    public UserDto(Long id, String firstName, String lastName, String userName, String email, String password) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.userName = userName;
-        this.email = email;
-        this.password = password;
     }
 
     public Long getId() {

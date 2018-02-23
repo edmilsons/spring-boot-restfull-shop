@@ -28,4 +28,8 @@ public class ProductService {
     public Long create(Product product) {
         return productRepository.save(product).getId();
     }
+
+    public Product findByName(String name) {
+        return productRepository.findByNameIgnoreCase(name);
+    }
 }

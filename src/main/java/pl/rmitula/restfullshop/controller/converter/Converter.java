@@ -7,19 +7,19 @@ import pl.rmitula.restfullshop.model.dto.CategoryDto;
 import pl.rmitula.restfullshop.model.dto.ProductDto;
 import pl.rmitula.restfullshop.model.dto.UserDto;
 
+import javax.validation.constraints.NotNull;
+
 public class Converter {
 
     // USER
     public static User fromUserDto(UserDto userDto) {
 
         User user = new User();
-        user.setId(userDto.getId());
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());
         user.setUsername(userDto.getUsername());
         user.setEmail(userDto.getEmail());
         user.setPassword(userDto.getPassword());
-
         return user;
     }
 
@@ -31,8 +31,7 @@ public class Converter {
         userDto.setUsername(user.getUsername());
         userDto.setLastName(user.getLastName());
         userDto.setEmail(user.getEmail());
-        userDto.setPassword(user.getPassword());
-
+        userDto.setPassword(null);
         return userDto;
     }
 
@@ -41,7 +40,8 @@ public class Converter {
         Product product = new Product();
         product.setCategory(category);
         product.setName(productDto.getName());
-
+        product.setQuanityInStock(productDto.getQuanityInStock());
+        product.setPrice(productDto.getPrice());
         return product;
     }
 
@@ -49,12 +49,14 @@ public class Converter {
 
         ProductDto productDto = new ProductDto();
         productDto.setId(product.getId());
-        productDto.setCategoryId(product.getCategory().getId());
+        productDto.setCategory(product.getCategory().getId());//?
         productDto.setName(product.getName());
+        productDto.setQuanityInStock(product.getQuanityInStock());
+        productDto.setPrice(product.getPrice());
         return productDto;
     }
 
-    private static CategoryDto toCategoryDto(Category category) {
+    public static CategoryDto toCategoryDto(Category category) {
         CategoryDto categoryDto = new CategoryDto();
         categoryDto.setId(category.getId());
         categoryDto.setName(category.getName());

@@ -1,8 +1,9 @@
 package pl.rmitula.restfullshop.model.dto;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
-public class CategoryDto {
+public class CategoryDto implements Serializable {
 
     private Long id;
     @NotNull

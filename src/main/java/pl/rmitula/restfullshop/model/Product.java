@@ -2,15 +2,20 @@ package pl.rmitula.restfullshop.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 @Entity
-public class Product {
+public class Product implements Serializable {
 
     @Id
     @GeneratedValue
     private Long id;
     @NotNull
     private String name;
+    @NotNull
+    private Integer quanityInStock;
+    @NotNull
+    private Double price;
 
     @ManyToOne
     private Category category;
@@ -32,6 +37,22 @@ public class Product {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Integer getQuanityInStock() {
+        return quanityInStock;
+    }
+
+    public void setQuanityInStock(Integer quanityInStock) {
+        this.quanityInStock = quanityInStock;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
     }
 
     public Category getCategory() {

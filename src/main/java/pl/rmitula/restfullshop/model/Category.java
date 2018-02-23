@@ -2,10 +2,11 @@ package pl.rmitula.restfullshop.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
-public class Category {
+public class Category implements Serializable {
 
     @Id
     @GeneratedValue

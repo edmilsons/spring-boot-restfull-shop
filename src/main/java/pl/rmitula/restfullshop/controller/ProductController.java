@@ -31,7 +31,7 @@ public class ProductController {
         this.categoryService = categoryService;
     }
 
-    @GetMapping("/")
+    @GetMapping
     public List<ProductDto> get() {
         return productService.getProducts().stream().map((Product product) -> toProductDto(product)).collect(Collectors.toList());
     }
@@ -39,6 +39,7 @@ public class ProductController {
     @GetMapping("/{id}")
     public HttpEntity<ProductDto> findById(@PathVariable(name = "id") long id) {
         Product product = productService.findById(id);
+
         if (product != null) {
             return new ResponseEntity<>(toProductDto(product), HttpStatus.OK);
         } else {
@@ -46,11 +47,26 @@ public class ProductController {
         }
     }
 
-    @PostMapping("/")
-    public Long create(@RequestBody @Valid ProductDto productDto) {
-        Category category = categoryService.findById(productDto.getCategoryId());
-        return productService.create(fromProductDto(productDto, category));
-        //TODO: Check if category exists
+    @GetMapping("/findByName/{name}")
+    public HttpEntity<ProductDto> findByName(@PathVariable(name = "name") String name) {
+        Product product = productService.findByName(name);
+
+        if (product != null) {
+            return new ResponseEntity<>(toProductDto(product), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PostMapping
+    public HttpEntity<Long> create(@RequestBody @Valid ProductDto productDto) {
+        Category category = categoryService.findById(productDto.getCategory());
+
+        if(category != null) {
+            return new ResponseEntity<>(productService.create(fromProductDto(productDto, category)), HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
 

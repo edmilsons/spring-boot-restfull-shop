@@ -17,7 +17,7 @@ import static pl.rmitula.restfullshop.controller.converter.Converter.fromUserDto
 import static pl.rmitula.restfullshop.controller.converter.Converter.toUserDto;
 
 @RestController
-@RequestMapping("api/users")
+@RequestMapping("/api/users")
 public class UserController {
 
     private UserService userService;
@@ -27,7 +27,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/")
+    @GetMapping
     public List<UserDto> get() {
         return userService.getUsers().stream().map((User user) -> toUserDto(user)).collect(Collectors.toList());
     }
@@ -42,12 +42,22 @@ public class UserController {
         }
     }
 
-    @PostMapping(path = "/")
+    @GetMapping(path = "/findByUserName/{userName}")
+    public HttpEntity<UserDto> findByUserName(@PathVariable(name = "userName") String userName) {
+        User user = userService.findByUserName(userName);
+        if (user != null) {
+            return new ResponseEntity<>(toUserDto(user), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PostMapping
     public HttpEntity<Long> create(@RequestBody @Valid UserDto userDto) {
         User userName = userService.findByUserName(userDto.getUsername());
 
-        if (!userService.exists(userDto.getId()) && userName == null) {
-            return new ResponseEntity<>(userService.createuser(fromUserDto(userDto)), HttpStatus.OK);
+        if (userName == null) {
+            return new ResponseEntity<>(userService.createuser(fromUserDto(userDto)), HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
@@ -59,9 +69,14 @@ public class UserController {
     }
 
     @DeleteMapping(path = "/{id}")
-    public void delete(@PathVariable(name = "id") long id) throws NotFoundException {
-        userService.delete(id);
-        //TODO: 500 ERROR HANDLE
+    public HttpStatus delete(@PathVariable(name = "id") long id) throws NotFoundException {
+        User user = userService.unique(id);
+        if (user != null) {
+            userService.delete(id);
+            return HttpStatus.OK;
+        } else {
+            return HttpStatus.NOT_FOUND;
+        }
     }
 
 
