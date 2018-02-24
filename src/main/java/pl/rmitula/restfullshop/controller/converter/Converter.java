@@ -7,11 +7,8 @@ import pl.rmitula.restfullshop.model.dto.CategoryDto;
 import pl.rmitula.restfullshop.model.dto.ProductDto;
 import pl.rmitula.restfullshop.model.dto.UserDto;
 
-import javax.validation.constraints.NotNull;
-
 public class Converter {
 
-    // USER
     public static User fromUserDto(UserDto userDto) {
 
         User user = new User();
@@ -35,7 +32,6 @@ public class Converter {
         return userDto;
     }
 
-    // PRODUCT
     public static Product fromProductDto(ProductDto productDto, Category category) {
         Product product = new Product();
         product.setCategory(category);
@@ -66,7 +62,6 @@ public class Converter {
 
     public static Category fromCategoryDto(CategoryDto categoryDto) {
         Category category = new Category();
-        category.setId(categoryDto.getId());
         category.setName(categoryDto.getName());
         return category;
     }

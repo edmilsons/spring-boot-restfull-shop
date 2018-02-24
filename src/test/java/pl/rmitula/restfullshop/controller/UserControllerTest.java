@@ -31,8 +31,6 @@ public class UserControllerTest {
     @InjectMocks
     private UserController userController;
 
-    private Long setupId;
-
     @Before
     public void setUp() throws Exception {
         mockMvc = MockMvcBuilders.standaloneSetup(userController)

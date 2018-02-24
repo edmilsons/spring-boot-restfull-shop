@@ -1,10 +1,10 @@
 package pl.rmitula.restfullshop.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.rmitula.restfullshop.exception.NotFoundException;
 import pl.rmitula.restfullshop.model.Category;
 import pl.rmitula.restfullshop.model.dto.CategoryDto;
 import pl.rmitula.restfullshop.service.CategoryService;
@@ -33,35 +33,22 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    public HttpEntity<CategoryDto> findById(@PathVariable(name = "id") long id) {
-        Category category = categoryService.findById(id);
-        if (category != null) {
-            return new ResponseEntity<>(toCategoryDto(category), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public CategoryDto findById(@PathVariable(name = "id") long id) throws NotFoundException {
+       return toCategoryDto(categoryService.findById(id));
     }
 
     @GetMapping("/findByName/{name}")
-    public HttpEntity<CategoryDto> findByName(@PathVariable(name = "name") String name) {
-        Category category = categoryService.findByName(name);
-        if (category != null) {
-            return new ResponseEntity<>(toCategoryDto(category), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public CategoryDto findByName(@PathVariable(name = "name") String name) {
+        return toCategoryDto(categoryService.findByName(name));
     }
 
     @PostMapping
-    public HttpEntity<Long> create(@RequestBody @Valid CategoryDto categoryDto) {
-        Category category = categoryService.findByName(categoryDto.getName());
-
-        if (category == null) {
-            return new ResponseEntity<>(categoryService.create(fromCategoryDto(categoryDto)), HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
+    public ResponseEntity<Long> create(@RequestBody @Valid CategoryDto categoryDto) {
+        return new ResponseEntity<>(categoryService.create(fromCategoryDto(categoryDto)), HttpStatus.CREATED);
     }
 
-
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable(name = "id") long id) throws NotFoundException {
+        categoryService.delete(id);
+    }
 }

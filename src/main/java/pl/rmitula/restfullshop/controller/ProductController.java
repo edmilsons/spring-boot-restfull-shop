@@ -1,7 +1,6 @@
 package pl.rmitula.restfullshop.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,12 +17,13 @@ import java.util.stream.Collectors;
 import static pl.rmitula.restfullshop.controller.converter.Converter.fromProductDto;
 import static pl.rmitula.restfullshop.controller.converter.Converter.toProductDto;
 
-@RequestMapping("api/products")
 @RestController
 public class ProductController {
 
     private ProductService productService;
     private CategoryService categoryService;
+
+    final String url = "api/products";
 
     @Autowired
     public ProductController(ProductService productService, CategoryService categoryService) {
@@ -31,35 +31,28 @@ public class ProductController {
         this.categoryService = categoryService;
     }
 
-    @GetMapping
+    @GetMapping(url)
     public List<ProductDto> get() {
         return productService.getProducts().stream().map((Product product) -> toProductDto(product)).collect(Collectors.toList());
     }
 
-    @GetMapping("/{id}")
-    public HttpEntity<ProductDto> findById(@PathVariable(name = "id") long id) {
-        Product product = productService.findById(id);
-
-        if (product != null) {
-            return new ResponseEntity<>(toProductDto(product), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    @GetMapping(url + "/{id}")
+    public ProductDto findById(@PathVariable(name = "id") long id) {
+        return toProductDto(productService.findById(id));
     }
 
-    @GetMapping("/findByName/{name}")
-    public HttpEntity<ProductDto> findByName(@PathVariable(name = "name") String name) {
-        Product product = productService.findByName(name);
-
-        if (product != null) {
-            return new ResponseEntity<>(toProductDto(product), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    @GetMapping(url + "/findByName/{name}")
+    public ProductDto findByName(@PathVariable(name = "name") String name) {
+        return toProductDto(productService.findByName(name));
     }
 
-    @PostMapping
-    public HttpEntity<Long> create(@RequestBody @Valid ProductDto productDto) {
+    @GetMapping("api/category/{categoryId}/products")
+    public List<ProductDto> findByCategoryId(@PathVariable(name = "categoryId") Long categoryId) {
+        return productService.findByCategoryId(categoryId).stream().map((Product product) -> toProductDto(product)).collect(Collectors.toList());
+    }
+
+    @PostMapping(url)
+    public ResponseEntity<Long> create(@RequestBody @Valid ProductDto productDto) {
         Category category = categoryService.findById(productDto.getCategory());
 
         if(category != null) {
@@ -68,6 +61,13 @@ public class ProductController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @DeleteMapping(url + "/{id}")
+    public void delete(@PathVariable(name = "id") long id){
+            productService.delete(id);
+    }
+
+
 
 
 }

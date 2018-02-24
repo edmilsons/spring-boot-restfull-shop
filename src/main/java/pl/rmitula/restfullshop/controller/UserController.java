@@ -1,11 +1,10 @@
 package pl.rmitula.restfullshop.controller;
 
-import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;import pl.rmitula.restfullshop.model.User;
+import org.springframework.web.bind.annotation.*;
+import pl.rmitula.restfullshop.model.User;
 import pl.rmitula.restfullshop.model.dto.UserDto;
 import pl.rmitula.restfullshop.service.UserService;
 
@@ -33,34 +32,18 @@ public class UserController {
     }
 
     @GetMapping(path = "/{id}")
-    public HttpEntity<UserDto> findById(@PathVariable(name = "id") long id) {
-        User user = userService.unique(id);
-        if (user != null) {
-            return new ResponseEntity<>(toUserDto(user), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public UserDto findById(@PathVariable(name = "id") long id) {
+        return toUserDto(userService.findById(id));
     }
 
     @GetMapping(path = "/findByUserName/{userName}")
-    public HttpEntity<UserDto> findByUserName(@PathVariable(name = "userName") String userName) {
-        User user = userService.findByUserName(userName);
-        if (user != null) {
-            return new ResponseEntity<>(toUserDto(user), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public UserDto findByUserName(@PathVariable(name = "userName") String userName) {
+        return toUserDto(userService.findByUserName(userName));
     }
 
     @PostMapping
-    public HttpEntity<Long> create(@RequestBody @Valid UserDto userDto) {
-        User userName = userService.findByUserName(userDto.getUsername());
-
-        if (userName == null) {
-            return new ResponseEntity<>(userService.createuser(fromUserDto(userDto)), HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
+    public ResponseEntity<Long> create(@RequestBody @Valid UserDto userDto) {
+        return new ResponseEntity<>(userService.create(fromUserDto(userDto)), HttpStatus.CREATED);
     }
 
     @PutMapping(path = "/{id}")
@@ -69,14 +52,8 @@ public class UserController {
     }
 
     @DeleteMapping(path = "/{id}")
-    public HttpStatus delete(@PathVariable(name = "id") long id) throws NotFoundException {
-        User user = userService.unique(id);
-        if (user != null) {
-            userService.delete(id);
-            return HttpStatus.OK;
-        } else {
-            return HttpStatus.NOT_FOUND;
-        }
+    public void delete(@PathVariable(name = "id") long id) {
+        userService.delete(id);
     }
 
 
