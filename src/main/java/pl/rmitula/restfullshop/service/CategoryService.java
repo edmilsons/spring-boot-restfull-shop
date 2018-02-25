@@ -42,16 +42,6 @@ public class CategoryService {
         }
     }
 
-    public void delete(long id) throws NotFoundException {
-        Category category = categoryRepository.findById(id);
-
-        if(category != null) {
-            categoryRepository.delete(id);
-        } else {
-            throw new NotFoundException("Not found category with id: " + id);
-        }
-    }
-
     public Long create(Category category) {
         //TODO: Empty fields validation
         Category categoryName = categoryRepository.findByNameIgnoreCase(category.getName());
@@ -60,6 +50,37 @@ public class CategoryService {
             return categoryRepository.save(category).getId();
         } else {
             throw new ConflictException("This category already exists.");
+        }
+    }
+
+    public void update(long id, String name) {
+        //TODO: Empty fields validation
+        //TODO: Try to catch ConstraintViolationException in ExceptionHandler.
+        Category category = categoryRepository.findById(id);
+
+        if(category != null) {
+
+            Category categoryName = categoryRepository.findByNameIgnoreCase(name);
+
+            if(categoryName != null && categoryName.getId() != id) {
+                throw new ConflictException("This name is already associated with another category.");
+                //FIXME: Overwriting same category name
+            }
+
+            category.setName(name);
+            categoryRepository.save(category);
+        } else {
+            throw new NotFoundException("Not found category with id: " + id);
+        }
+    }
+
+    public void delete(long id) throws NotFoundException {
+        Category category = categoryRepository.findById(id);
+
+        if(category != null) {
+            categoryRepository.delete(id);
+        } else {
+            throw new NotFoundException("Not found category with id: " + id);
         }
     }
 

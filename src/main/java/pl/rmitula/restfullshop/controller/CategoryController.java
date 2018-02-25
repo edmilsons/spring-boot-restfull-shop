@@ -47,6 +47,11 @@ public class CategoryController {
         return new ResponseEntity<>(categoryService.create(fromCategoryDto(categoryDto)), HttpStatus.CREATED);
     }
 
+    @PutMapping("/{id}")
+    public void update(@PathVariable(name = "id") long id, @RequestBody @Valid CategoryDto categoryDto) {
+        categoryService.update(id, categoryDto.getName());
+    }
+
     @DeleteMapping("/{id}")
     public void delete(@PathVariable(name = "id") long id) throws NotFoundException {
         categoryService.delete(id);

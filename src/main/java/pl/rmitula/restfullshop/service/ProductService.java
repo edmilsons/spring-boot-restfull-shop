@@ -7,6 +7,7 @@ import pl.rmitula.restfullshop.exception.ConflictException;
 import pl.rmitula.restfullshop.exception.NotFoundException;
 import pl.rmitula.restfullshop.model.Category;
 import pl.rmitula.restfullshop.model.Product;
+import pl.rmitula.restfullshop.model.User;
 import pl.rmitula.restfullshop.repository.ProductRepository;
 import javax.validation.ConstraintViolationException;
 import java.util.List;
@@ -72,10 +73,35 @@ public class ProductService {
             try {
                 return productRepository.save(product).getId();
             } catch (ConstraintViolationException e) {
-                throw new BadRequestException();
+                throw new BadRequestException("Bad request.");
             }
         } else {
             throw new ConflictException("This name is already associated with a different product.");
+        }
+    }
+
+    public void update(Long id, String name, Long category, Integer quanityInStock, Double price) {
+        //TODO: Empty fields validation
+        //TODO: Try to catch ConstraintViolationException in ExceptionHandler.
+        Product product = productRepository.findById(id);
+
+        if(product != null) {
+            Product procuctName = productRepository.findByNameIgnoreCase(product.getName());
+
+            if(procuctName != null && procuctName.getId() != id) {
+                throw new ConflictException("This name is already associated with another product.");
+            }
+
+            Category productCategory = categoryService.findById(category);
+
+            product.setCategory(productCategory);
+            product.setName(name);
+            product.setQuanityInStock(quanityInStock);
+            product.setPrice(price);
+
+            productRepository.save(product);
+        } else {
+            throw new NotFoundException("Not found product with id: " + id);
         }
     }
 

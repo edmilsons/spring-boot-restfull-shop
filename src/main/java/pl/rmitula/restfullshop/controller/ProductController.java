@@ -62,6 +62,11 @@ public class ProductController {
         }
     }
 
+    @PutMapping(url + "/{id}")
+    public void update(@PathVariable(name = "id") long id, @RequestBody @Valid ProductDto productDto) {
+        productService.update(id, productDto.getName(), productDto.getCategory(), productDto.getQuanityInStock(), productDto.getPrice());
+    }
+
     @DeleteMapping(url + "/{id}")
     public void delete(@PathVariable(name = "id") long id){
             productService.delete(id);

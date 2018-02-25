@@ -24,7 +24,7 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User findById(long id) {
+    public User findById(long id) throws NotFoundException {
         User user = userRepository.findById(id);
 
         if(user != null) {
@@ -44,17 +44,36 @@ public class UserService {
         }
     }
 
+    public Long create(User user) throws ConflictException {
+        //TODO: Empty fields validation
+        //TODO: Try to catch ConstraintViolationException in ExceptionHandler.
+        User userName = userRepository.findByUserNameIgnoreCase(user.getUsername());
+        User email = userRepository.findByEmailIgnoreCase(user.getEmail());
+
+        if(userName == null && email == null) {
+            try {
+                return userRepository.save(user).getId();
+            } catch (ConstraintViolationException e) {
+                throw new BadRequestException("Bad request.");
+            }
+        } else {
+            throw new ConflictException("This username or email is already associated with a different user account.");
+        }
+    }
+
     public void update(long id, String userName, String firstName, String lastName, String email) throws NotFoundException, ConflictException, BadRequestException {
         //TODO: Empty fields validation
+        //TODO: Try to catch ConstraintViolationException in ExceptionHandler.
         User user = userRepository.findById(id);
-        User checkUserName = userRepository.findByUserNameIgnoreCase(userName);
-        User checkEmail = userRepository.findByEmailIgnoreCase(email);
 
         if(user != null) {
+            User checkUserName = userRepository.findByUserNameIgnoreCase(userName);
 
             if(checkUserName != null && checkUserName.getId() != id) {
                 throw new ConflictException("This username is already associated with another user account.");
             }
+
+            User checkEmail = userRepository.findByEmailIgnoreCase(email);
 
             if(checkEmail != null && checkEmail.getId() != id) {
                 throw new ConflictException("This email is already associated with another user account.");
@@ -69,7 +88,7 @@ public class UserService {
                 userRepository.save(user);
 
             } catch (ConstraintViolationException e) {
-                throw new BadRequestException();
+                throw new BadRequestException("Bad request.");
             }
         } else {
             throw new NotFoundException("Not found user with id: " + id);
@@ -86,19 +105,4 @@ public class UserService {
         }
     }
 
-    public Long create(User user) throws ConflictException {
-        //TODO: Empty fields validation
-        User userName = userRepository.findByUserNameIgnoreCase(user.getUsername());
-        User email = userRepository.findByEmailIgnoreCase(user.getEmail());
-
-        if(userName == null && email == null) {
-            try {
-                return userRepository.save(user).getId();
-            } catch (ConstraintViolationException e) {
-                throw new BadRequestException();
-            }
-        } else {
-            throw new ConflictException("This username or email is already associated with a different user account.");
-        }
-    }
 }
