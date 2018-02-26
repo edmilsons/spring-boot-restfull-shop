@@ -56,4 +56,5 @@ public class CategoryController {
     public void delete(@PathVariable(name = "id") long id) throws NotFoundException {
         categoryService.delete(id);
     }
+
 }

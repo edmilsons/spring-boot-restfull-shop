@@ -53,6 +53,7 @@ public class ProductController {
 
     @PostMapping(url)
     public ResponseEntity<Long> create(@RequestBody @Valid ProductDto productDto) {
+        //FIXME: Better handling for BAD_REQUEST
         Category category = categoryService.findById(productDto.getCategory());
 
         if(category != null) {
@@ -71,8 +72,5 @@ public class ProductController {
     public void delete(@PathVariable(name = "id") long id){
             productService.delete(id);
     }
-
-
-
 
 }
