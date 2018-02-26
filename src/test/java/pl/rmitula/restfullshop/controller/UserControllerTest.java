@@ -50,7 +50,7 @@ public class UserControllerTest {
 
     @Test
     public void GetUserByIdTest() throws Exception {
-        mockMvc.perform(get("/api/users/1"))
+        mockMvc.perform(get("/api/users/{id}", 1))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.firstName", Matchers.is("Andrzej")))
@@ -61,7 +61,7 @@ public class UserControllerTest {
 
     @Test
     public void GetUserByIdWithUnknownIdTest() throws Exception {
-        mockMvc.perform(get("/api/users/100"))
+        mockMvc.perform(get("/api/users/{id}", 100))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code", Matchers.is(404)))
                 .andExpect(jsonPath("$.description", Matchers.is("Not found user with id: 100")));
@@ -69,7 +69,7 @@ public class UserControllerTest {
 
     @Test
     public void GetUserByUserNameTest() throws Exception {
-        mockMvc.perform(get("/api/users/findByUserName/admin"))
+        mockMvc.perform(get("/api/users/findByUserName/{name}", "admin"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.firstName", Matchers.is("Andrzej")))
@@ -80,7 +80,7 @@ public class UserControllerTest {
 
     @Test
     public void GetUserByUserNameWithIgnoreCaseTest() throws Exception {
-        mockMvc.perform(get("/api/users/findByUserName/aDMiN"))
+        mockMvc.perform(get("/api/users/findByUserName/{name}", "aDmIN"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.firstName", Matchers.is("Andrzej")))
@@ -91,7 +91,7 @@ public class UserControllerTest {
 
     @Test
     public void GetUserByUnknownUserNameTest() throws Exception {
-        mockMvc.perform(get("/api/users/findByUserName/unknown"))
+        mockMvc.perform(get("/api/users/findByUserName/{name}", "unknown"))
                 .andExpect(jsonPath("$.code", Matchers.is(404)))
                 .andExpect(jsonPath("$.description", Matchers.is("Not found user with username: unknown")));
     }
@@ -131,7 +131,7 @@ public class UserControllerTest {
     public void CreateUserWithExistingEmailTest() throws Exception {
         mockMvc.perform(post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(createUserInJson("Adam", "Kowalski", "adam", "aduda@gmail.com", "password")))
+                .content(createUserInJson("Adam", "Kowalski", "aDAm", "aduda@gmail.com", "password")))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.code", Matchers.is(409)))
                 .andExpect(jsonPath("$.description", Matchers.is("This username or email is already associated with a different user account.")));
