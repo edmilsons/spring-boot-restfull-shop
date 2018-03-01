@@ -87,10 +87,64 @@ public class ProductControllerTest {
                 .andExpect(jsonPath("$.description", Matchers.is("Not found category with id: 100")));
     }
 
-    //TODO: More integration tests.
+    @Test
+    public void CreateProductTest() throws Exception {
+        mockMvc.perform(post("/api/products")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createProductInJson("2", "New product", "13", "140")))
+                .andExpect(status().isCreated());
+    }
 
+    @Test
+    public void CreateProductWithUnknownCategoryTest() throws Exception {
+        mockMvc.perform(post("/api/products")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createProductInJson("100", "New product", "13", "140")))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code", Matchers.is(404)))
+                .andExpect(jsonPath("$.description", Matchers.is("Not found category with id: 100")));
+    }
 
+    @Test
+    public void CreateProductWithExistingNameTest() throws Exception {
+        mockMvc.perform(post("/api/products")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createProductInJson("2", "Adidas Superstar", "13", "140")))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.code", Matchers.is(409)))
+                .andExpect(jsonPath("$.description", Matchers.is("This name is already associated with a different product.")));
+    }
 
+    @Test
+    public void UpdateProductTest() throws Exception {
+        mockMvc.perform(put("/api/products/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createProductInJson("1", "New", "13", "140")))
+                .andExpect(status().isOk());
+    }
 
+    @Test
+    public void UpdateProductWithUnknownIdTest() throws Exception {
+        mockMvc.perform(put("/api/products/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createProductInJson("100", "New", "13", "140")))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code", Matchers.is(404)))
+                .andExpect(jsonPath("$.description", Matchers.is("Not found category with id: 100")));
+    }
+
+    @Test
+    public void DeleteProductTest() throws Exception {
+        mockMvc.perform(delete("/api/products/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    private static String createProductInJson (String category, String name, String quanityInStock, String price) {
+        return "{ \"category\": \"" + category + "\", " +
+                "\"name\":\"" + name + "\"," +
+                "\"quanityInStock\":\"" + quanityInStock + "\"," +
+                "\"price\":\"" + price + "\"}";
+    }
 
 }
